@@ -2,6 +2,8 @@
 #define _Header_H
 using namespace std;
 #include <math.h>
+#include <string.h>
+#include <iostream>
 
 template <class T>
 class vec3 {
