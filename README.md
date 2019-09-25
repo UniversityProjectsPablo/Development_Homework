@@ -13,3 +13,6 @@ Let’s test our C++ skills: Create a new vec3 class with
 
 ## Day 1
 Introduction to XML
+
+## Day 2
+Save and Load
