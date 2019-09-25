@@ -299,7 +299,7 @@ void j1App::Load()
 		if (pModule->active == false)
 			continue;
 
-		item->data->Load;
+		item->data->Load();
 	}
 }
 
