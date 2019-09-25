@@ -7,7 +7,7 @@ using namespace std;
 
 template <class T>
 class vec3 {
-private:
+public:
 	T x;
 	T y;
 	T z;
@@ -31,7 +31,12 @@ vec3<T>::~vec3() {}
 
 
 template<class T>
-vec3<T>::vec3(T tx, T ty, T tz) {}
+vec3<T>::vec3(T tx, T ty, T tz) 
+{
+	x = tx;
+	y = ty;
+	z = tz;
+}
 
 template<class T>
 bool vec3<T>::is_zero() 
@@ -45,11 +50,20 @@ bool vec3<T>::is_zero()
 template<class T>
 float vec3<T>::distance_to(vec3) 
 {
-	float distance;
+	float distance = 0;
 
-	distance = sqrt(pow(x - vec3, 2) + pow(y - vec3, 2) + pow(z - vec3, 2));
+	//distance = sqrt(pow(x - vec3, 2) + pow(y - vec3, 2) + pow(z - vec3, 2));
 
 	return distance;
+}
+
+template<class T>
+void vec3<T>::normalize()
+{
+	T aux = sqrt((x * x) + (y * y) + (z * z));
+	x = x / aux;
+	y = y / aux;
+	z = z / aux;
 }
 
 #endif // !_Header
