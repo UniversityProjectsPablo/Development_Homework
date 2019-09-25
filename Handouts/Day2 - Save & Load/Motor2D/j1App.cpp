@@ -152,7 +152,16 @@ void j1App::PrepareUpdate()
 void j1App::FinishUpdate()
 {
 	// TODO 2: This is a good place to call load / Save functions
-
+	if (saveRequested == true)
+	{
+		Save(); //We save the game
+		saveRequested = false; //We have saved the game, so our requests go back to default
+	}
+	if (loadRequested == true)
+	{
+		Load();
+		loadRequested = false;
+	}
 }
 
 // Call modules before each loop iteration
@@ -263,6 +272,36 @@ const char* j1App::GetOrganization() const
 	return organization.GetString();
 }
 
+void j1App::RequestSave()
+{
+	saveRequested = true;
+}
+
+void j1App::RequestLoad()
+{
+	loadRequested = true;
+}
+
+void j1App::Save() 
+{	
+
+}
+
+void j1App::Load()
+{
+	p2List_item<j1Module*>* item;
+	j1Module* pModule = NULL;
+
+	for (item = modules.start; item != NULL; item = item->next) 
+	{
+		pModule = item->data;
+
+		if (pModule->active == false)
+			continue;
+
+		item->data->Load;
+	}
+}
 
 // TODO 4: Create a simulation of the xml file to read 
 

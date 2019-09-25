@@ -47,6 +47,14 @@ public:
 	// TODO 1: Create methods to request save and load
 	// that can be called anytime
 
+	void RequestSave();
+	void RequestLoad();
+	bool saveRequested = false;
+	bool loadRequested = false;
+
+	void Save();
+	void Load();
+
 private:
 
 	// Load config file
