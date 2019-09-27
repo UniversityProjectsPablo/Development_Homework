@@ -19,7 +19,7 @@ public:
 	void normalize();
 	void zero();
 	bool is_zero();
-	float distance_to(vec3);
+	T distance_to(const vec3);
 };
 
 template<class T>
@@ -39,6 +39,14 @@ vec3<T>::vec3(T tx, T ty, T tz)
 }
 
 template<class T>
+void vec3<T>::zero()
+{
+	x = 0;
+	y = 0;
+	z = 0;
+}
+
+template<class T>
 bool vec3<T>::is_zero() 
 {
 	if (x == 0 && y == 0 && z == 0)
@@ -48,13 +56,17 @@ bool vec3<T>::is_zero()
 }
 
 template<class T>
-float vec3<T>::distance_to(vec3) 
+T vec3<T>::distance_to(const vec3)
 {
-	float distance = 0;
+	vec3 v1;
+	T distance = 0;
 
-	//distance = sqrt(pow(x - vec3, 2) + pow(y - vec3, 2) + pow(z - vec3, 2));
+	distance = sqrt(pow(x - v1.x, 2) + pow(y - v1.y, 2) + pow(z - v1.z, 2));
 
-	return distance;
+	if (distance > 0)
+		return distance;
+	else
+		return (-distance);
 }
 
 template<class T>
