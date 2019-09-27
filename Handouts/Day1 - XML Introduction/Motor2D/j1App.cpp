@@ -60,6 +60,16 @@ bool j1App::Awake()
 	// TODO 3: Load config.xml file using load_file() method from the xml_document class.
 	// If everything goes well, load the top tag inside the xml_node property
 	// created in the last TODO
+	pugi::xml_parse_result result = config_file.load_file("config.xml");
+	
+	if (result == NULL)
+	{
+		LOG("Could not load map xml file config.xml. pugi error: %s", result.description());
+	}
+	else
+	{
+		config = config_file.child("config");
+	}
 
 	bool ret = true;
 
@@ -79,6 +89,7 @@ bool j1App::Awake()
 	 
 	// TODO 4: Read the title from the config file
 	// and set the window title using win->SetTitle()
+	win->SetTitle("Wow, Pugi title!");
 
 	return ret;
 }
