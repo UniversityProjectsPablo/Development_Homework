@@ -12,32 +12,7 @@
 
 
 // TODO 1: Create a struct needed to hold the information to Map node
-enum Orientation {
-	or_ortogonal,
-	or_isometric,
-	or_staggered,
-	or_hexagonal,
-};
-Orientation myOrientation = or_ortogonal;
 
-enum  renderorder {
-	right_down,
-	right_up,
-	left_down,
-	left_up,
-};
-
-enum class information {
-	version = 1,
-	//Orientation myOrientation,
-	renderorder = 1,
-	width = 1,
-	height = 1,
-	tilewidth = 32,
-	tileheight = 32,
-	spacing = 1,
-	margin = 1,
-};
 
 // ----------------------------------------------------
 class j1Map : public j1Module
