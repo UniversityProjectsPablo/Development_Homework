@@ -284,7 +284,18 @@ void j1App::RequestLoad()
 
 void j1App::Save() 
 {	
+	p2List_item<j1Module*>* item;
+	j1Module* pModule = NULL;
 
+	for (item = modules.start; item != NULL; item = item->next)
+	{
+		pModule = item->data;
+
+		if (pModule->active == false)
+			continue;
+
+		item->data->Save();
+	}
 }
 
 void j1App::Load()
@@ -304,6 +315,7 @@ void j1App::Load()
 }
 
 // TODO 4: Create a simulation of the xml file to read 
+
 
 // TODO 5: Create a method to actually load an xml file
 // then call all the modules to load themselves
