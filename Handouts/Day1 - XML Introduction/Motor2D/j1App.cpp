@@ -83,6 +83,8 @@ bool j1App::Awake()
 		// that can be used to read all variables for that module.
 		// Send nullptr if the node does not exist in config.xml
 
+			
+
 		ret = item->data->Awake();
 		item = item->next; 
 	}
