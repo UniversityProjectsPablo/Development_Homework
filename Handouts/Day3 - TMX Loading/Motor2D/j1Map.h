@@ -5,14 +5,46 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "j1Module.h"
+#include <string>
+using namespace std;
 
 // TODO 2: Create a struct to hold information for a TileSet
 // Ignore Terrain Types and Tile Types for now, but we want the image!
 // ----------------------------------------------------
-
+struct Tileset {
+	unsigned int firstgrid = 1;
+	string name = "Desert";
+	unsigned int tilewidth = 32;
+	unsigned int tileheight = 32;
+	unsigned int spacing = 32;
+	unsigned int margin = 32;
+	string img_desert_spacing = "tmw_desert_spacing.png";
+};
 
 // TODO 1: Create a struct needed to hold the information to Map node
+enum Orientation {
+	OR_Orthogonal,
+	OR_Isometric,
+	OR_Hexagonal,
+};
 
+enum RenderOrder {
+	right_down,
+	right_up,
+	left_down,
+	left_up,
+};
+
+struct MapNode {
+	float version = 1.0f;
+	Orientation myOrientation = OR_Orthogonal;
+	RenderOrder myRenderOrder = right_down;
+	unsigned int width = 50;
+	unsigned int height = 15;
+	unsigned int tilewidth = 32;
+	unsigned int tileheight = 32;
+	unsigned int nextobjectid = 1;
+};
 
 // ----------------------------------------------------
 class j1Map : public j1Module
