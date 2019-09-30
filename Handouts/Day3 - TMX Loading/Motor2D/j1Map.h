@@ -12,11 +12,11 @@
 // ----------------------------------------------------
 struct Tileset {
 	p2SString name = "Desert";
-	unsigned int firstgrid = 1;	
-	unsigned int tilewidth = 32;
-	unsigned int tileheight = 32;
-	unsigned int spacing = 32;
-	unsigned int margin = 32;
+	uint firstgrid = 1;
+	uint tilewidth = 32;
+	uint tileheight = 32;
+	uint spacing = 32;
+	uint margin = 32;
 
 	p2SString file_name;
 	unsigned int file_width;
@@ -25,9 +25,10 @@ struct Tileset {
 
 // TODO 1: Create a struct needed to hold the information to Map node
 enum Orientation {
-	OR_Orthogonal,
-	OR_Isometric,
-	OR_Hexagonal,
+	Orthogonal,
+	Isometric,
+	Hexagonal,
+	Staggered,
 };
 
 enum RenderOrder {
@@ -39,13 +40,13 @@ enum RenderOrder {
 
 struct map_info {
 	float version = 1.0f;
-	Orientation myOrientation = OR_Orthogonal;
+	Orientation myOrientation = Orthogonal;
 	RenderOrder myRenderOrder = right_down;
-	unsigned int width = 50;
-	unsigned int height = 15;
-	unsigned int tilewidth = 32;
-	unsigned int tileheight = 32;
-	unsigned int nextobjectid = 1;
+	uint width = 50;
+	uint height = 15;
+	uint tilewidth = 32;
+	uint tileheight = 32;
+	uint nextobjectid = 1;
 };
 
 struct Layer
@@ -79,7 +80,7 @@ public:
 	bool Load(const char* path);
 
 private:
-	void FillMapInfo();
+	void FillMapInfo(pugi::xml_node&);
 
 public:
 
@@ -89,7 +90,7 @@ public:
 	p2List<Layer*> layers;
 private:
 
-	pugi::xml_document	map_file;
+	pugi::xml_document	map_info;
 	p2SString			folder;
 	bool				map_loaded;
 };

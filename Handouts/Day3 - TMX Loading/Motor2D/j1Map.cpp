@@ -47,7 +47,7 @@ bool j1Map::CleanUp()
 		delete[] layers[i]->data;
 
 
-	map_file.reset();
+	map_info.reset();
 
 	return true;
 }
@@ -58,7 +58,7 @@ bool j1Map::Load(const char* file_name)
 	bool ret = true;
 	p2SString tmp("%s%s", folder.GetString(), file_name);
 
-	pugi::xml_parse_result result = map_file.load_file(tmp.GetString());
+	pugi::xml_parse_result result = map_info.load_file(tmp.GetString());
 
 	if(result == NULL)
 	{
@@ -89,8 +89,34 @@ bool j1Map::Load(const char* file_name)
 	return ret;
 }
 
-void j1Map::FillMapInfo()
+void j1Map::FillMapInfo(pugi::xml_node&)
 {
-	LOG("Testing");
+	p2SString orientation = map_info.attribute("myOrientation").as_string();
+	p2SString renderorder = map_info.attribute("renderorder").as_string();
+
+	//Map Orientation
+	if (orientation == "Orthogonal")
+		map.myOrientation = Orientation::Orthogonal;
+	else if (orientation == "Isometric")
+		map.myOrientation = Orientation::Isometric;
+	else if (orientation == "Staggered")
+		map.myOrientation = Orientation::Staggered;
+	else if (orientation == "Hexagonal")
+		map.myOrientation = Orientation::Hexagonal;
+
+	//Render Order
+	if (renderorder == "right_down")
+		map.myRenderOrder = RenderOrder::right_down;
+	else if (renderorder == "right_up")
+		map.myRenderOrder = RenderOrder::right_up;
+	else if (renderorder == "left_down")
+		map.myRenderOrder = RenderOrder::left_down;
+	else if (renderorder == "left_up")
+		map.myRenderOrder = RenderOrder::left_up;
+
+	map.width = map_info.attribute("width").as_uint();
+	map.height = map_info.attribute("height").as_uint();
+	map.tilewidth = map_info.attribute("tilewidth").as_uint();
+	map.tileheight = map_info.attribute("tileheight").as_uint();
 }
 
