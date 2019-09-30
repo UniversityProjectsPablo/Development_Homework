@@ -43,7 +43,9 @@ bool j1Map::CleanUp()
 
 	// TODO 2: Make sure you clean up any memory allocated
 	// from tilesets / map
-	
+	for (unsigned int i = 0; i < layers.count(); i++)
+		delete[] layers[i]->data;
+
 
 	map_file.reset();
 
@@ -68,6 +70,8 @@ bool j1Map::Load(const char* file_name)
 	{
 		// TODO 3: Create and call a private function to load and fill
 		// all your map data
+		
+
 	}
 
 	// TODO 4: Create and call a private function to load a tileset
@@ -83,5 +87,10 @@ bool j1Map::Load(const char* file_name)
 	map_loaded = ret;
 
 	return ret;
+}
+
+void j1Map::FillMapInfo()
+{
+	LOG("Testing");
 }
 
