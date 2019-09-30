@@ -80,8 +80,9 @@ public:
 	bool Load(const char* path);
 
 private:
-	void FillMapInfo(pugi::xml_node&);
-
+	bool FillMapInfo(pugi::xml_node&);
+	bool FillTileSet();
+	void LogMapData(bool, bool);
 public:
 
 	// TODO 1: Add your struct for map info as public for now

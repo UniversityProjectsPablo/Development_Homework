@@ -66,22 +66,24 @@ bool j1Map::Load(const char* file_name)
 		ret = false;
 	}
 
+	bool loadmap = false;
 	if(ret == true)
 	{
 		// TODO 3: Create and call a private function to load and fill
 		// all your map data
-		
+		loadmap = FillMapInfo(map_info.child("map"));
 
 	}
 
 	// TODO 4: Create and call a private function to load a tileset
 	// remember to support more any number of tilesets!
-	
+	bool loadtiles = FillTileSet();
 
 	if(ret == true)
 	{
 		// TODO 5: LOG all the data loaded
 		// iterate all tilesets and LOG everything
+		LogMapData(loadmap, loadtiles);
 	}
 
 	map_loaded = ret;
@@ -89,7 +91,7 @@ bool j1Map::Load(const char* file_name)
 	return ret;
 }
 
-void j1Map::FillMapInfo(pugi::xml_node&)
+bool j1Map::FillMapInfo(pugi::xml_node&)
 {
 	p2SString orientation = map_info.attribute("myOrientation").as_string();
 	p2SString renderorder = map_info.attribute("renderorder").as_string();
@@ -118,5 +120,57 @@ void j1Map::FillMapInfo(pugi::xml_node&)
 	map.height = map_info.attribute("height").as_uint();
 	map.tilewidth = map_info.attribute("tilewidth").as_uint();
 	map.tileheight = map_info.attribute("tileheight").as_uint();
+
+	return true;
 }
 
+bool j1Map::FillTileSet() 
+{
+	for (pugi::xml_node tileset = map_info.child("map").child("tileset");tileset;tileset = tileset.next_sibling("tileset")) 
+	{
+		Tileset* tile = new Tileset;
+
+		tile->name = tileset.attribute("name").as_string();
+		tile->firstgrid = tileset.attribute("firstgrid").as_uint();
+		tile->tilewidth = tileset.attribute("tilewidth").as_uint();
+		tile->tileheight = tileset.attribute("tileheight").as_uint();
+		tile->spacing = tileset.attribute("spacing").as_uint();
+		tile->margin = tileset.attribute("margin").as_uint();
+		
+		tile->file_name = tileset.attribute("file_name").as_string();
+		tile->file_width = tileset.attribute("file_width").as_uint();
+		tile->file_height = tileset.attribute("file_height").as_uint();		
+	}	
+	return true;
+}
+
+void j1Map::LogMapData(bool loadmap, bool loadtiles)
+{
+	if (loadmap && loadtiles)
+		LOG("XML file parsed successfully");
+	else
+		LOG("Error parsing XML file");
+
+	LOG("-- Map Info --");
+
+	LOG("Width: %d", map.width);
+	LOG("Height: %d", map.height);
+	LOG("Tilewidth: %d", map.tilewidth);
+	LOG("Tileheight: %d", map.tileheight);
+
+	LOG("TileSet----");
+
+	for (uint i = 0; i < tilesets.count(); i++)
+	{
+		LOG("name: %s", tilesets[i]->name.GetString());
+		LOG("firstgid: %d", tilesets[i]->firstgrid);
+		LOG("tile width: %d", tilesets[i]->tilewidth);
+		LOG("tile height: %d", tilesets[i]->tileheight);
+		LOG("spacing: %d", tilesets[i]->spacing);
+		LOG("margin: %d", tilesets[i]->margin);
+		LOG("---");
+		LOG("image name: %s", tilesets[i]->file_name.GetString());
+		LOG("image width: %d", tilesets[i]->file_width);
+		LOG("image height: %d", tilesets[i]->file_height);
+	}
+}
