@@ -8,7 +8,7 @@
 #include "j1Window.h"
 #include "j1Scene.h"
 
-j1Scene::j1Scene() : j1Module()
+j1Scene::j1Scene() 
 {
 	name.create("scene");
 }

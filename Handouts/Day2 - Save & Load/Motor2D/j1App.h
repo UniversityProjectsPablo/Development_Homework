@@ -97,13 +97,13 @@ private:
 	int					argc;
 	char**				args;
 
-	bool				saveRequested;
-	bool				loadRequested;
-
-
 	p2SString			title;
 	p2SString			organization;
 
+	mutable bool		saveRequested;
+	bool				loadRequested;
+	p2SString			load_game;
+	mutable p2SString	save_game;	
 };
 
 extern j1App* App;
