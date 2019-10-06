@@ -58,10 +58,10 @@ bool j1Scene::Update(float dt)
 		App->render->camera.x += 1;
 
 	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
-		App->Load();
+		App->RequestLoad();
 
 	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
-		App->Save();
+		App->RequestSave();
 
 	App->render->Blit(img, 0, 0);
 	return true;

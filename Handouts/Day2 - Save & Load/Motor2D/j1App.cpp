@@ -154,12 +154,12 @@ void j1App::FinishUpdate()
 	// TODO 2: This is a good place to call load / Save functions
 	if (saveRequested == true)
 	{
-		Save(); //We save the game
+		SaveGameNow(); //We save the game
 		saveRequested = false; //We have saved the game, so our requests go back to default
 	}
 	if (loadRequested == true)
 	{
-		Load();
+		LoadGameNow();
 		loadRequested = false;
 	}
 }
@@ -282,43 +282,24 @@ void j1App::RequestLoad()
 	loadRequested = true;
 }
 
-void j1App::Save() 
-{	
-	p2List_item<j1Module*>* item;
-	j1Module* pModule = NULL;
-
-	for (item = modules.start; item != NULL; item = item->next)
-	{
-		pModule = item->data;
-
-		if (pModule->active == false)
-			continue;
-
-		item->data->Save();
-	}
-}
-
-void j1App::Load()
-{
-	p2List_item<j1Module*>* item;
-	j1Module* pModule = NULL;
-
-	for (item = modules.start; item != NULL; item = item->next) 
-	{
-		pModule = item->data;
-
-		if (pModule->active == false)
-			continue;
-
-		item->data->Load();
-	}
-}
 
 // TODO 4: Create a simulation of the xml file to read 
+bool j1App::LoadSaveGame()
+{
 
+	return false;
+}
 
 // TODO 5: Create a method to actually load an xml file
 // then call all the modules to load themselves
+bool j1App::LoadGameNow()
+{
 
+	return false;
+}
 // TODO 7: Create a method to save the current state
+bool j1App::SaveGameNow() const
+{
 
+	return false;
+}

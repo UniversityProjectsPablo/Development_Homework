@@ -49,16 +49,14 @@ public:
 
 	void RequestSave();
 	void RequestLoad();
-	bool saveRequested = false;
-	bool loadRequested = false;
-
-	void Save();
-	void Load();
 
 private:
 
 	// Load config file
 	bool LoadConfig();
+
+	// Load save file
+	bool LoadSaveGame();
 
 	// Call modules before each loop iteration
 	void PrepareUpdate();
@@ -75,6 +73,9 @@ private:
 	// Call modules after each loop iteration
 	bool PostUpdate();
 
+	// Load and save
+	bool LoadGameNow();
+	bool SaveGameNow() const;
 public:
 
 	// Modules
@@ -95,6 +96,10 @@ private:
 	pugi::xml_node		app_config;
 	int					argc;
 	char**				args;
+
+	bool				saveRequested;
+	bool				loadRequested;
+
 
 	p2SString			title;
 	p2SString			organization;
