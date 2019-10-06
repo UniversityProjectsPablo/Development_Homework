@@ -10,12 +10,14 @@
 #include "j1Textures.h"
 #include "j1Audio.h"
 #include "j1Scene.h"
+#include "j1FileSystem.h"
 #include "j1App.h"
 
 // Constructor
 j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 {
 	frames = 0;
+	want_to_save = want_to_load = false;
 
 	input = new j1Input();
 	win = new j1Window();
@@ -23,9 +25,11 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	tex = new j1Textures();
 	audio = new j1Audio();
 	scene = new j1Scene();
+	fs = new j1FileSystem();
 
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
+	AddModule(fs);
 	AddModule(input);
 	AddModule(win);
 	AddModule(tex);
@@ -121,13 +125,15 @@ bool j1App::Update()
 	return ret;
 }
 
-
 // ---------------------------------------------
 bool j1App::LoadConfig()
 {
 	bool ret = true;
 
-	pugi::xml_parse_result result = config_file.load_file("config.xml");
+	char* buf;
+	int size = App->fs->Load("config.xml", &buf);
+	pugi::xml_parse_result result = config_file.load_buffer(buf, size);
+	RELEASE(buf);
 
 	if(result == NULL)
 	{
@@ -151,17 +157,31 @@ void j1App::PrepareUpdate()
 // ---------------------------------------------
 void j1App::FinishUpdate()
 {
-	// TODO 2: This is a good place to call load / Save functions
-	if (saveRequested == true)
+	// TODO 1: This is a good place to call load / Save functions
+
+	if (want_to_save == true)
 	{
-		SaveGameNow(); //We save the game
-		saveRequested = false; //We have saved the game, so our requests go back to default
+		SavegameNow();
+		want_to_save = false;
+		
 	}
-	if (loadRequested == true)
+
+	if (want_to_load == true)
 	{
 		LoadGameNow();
-		loadRequested = false;
+		want_to_load = false;
 	}
+}
+
+
+void j1App::Save() const
+{
+	want_to_save = true;
+}
+
+void j1App::Load()
+{
+	want_to_load = true;
 }
 
 // Call modules before each loop iteration
@@ -229,6 +249,8 @@ bool j1App::PostUpdate()
 	return ret;
 }
 
+
+
 // Called before quitting
 bool j1App::CleanUp()
 {
@@ -272,90 +294,80 @@ const char* j1App::GetOrganization() const
 	return organization.GetString();
 }
 
-void j1App::RequestSave()
-{
-	saveRequested = true;
-}
-
-void j1App::RequestLoad()
-{
-	loadRequested = true;
-}
+// TODO 3: Create a simulation of the xml file to read 
 
 
-// TODO 4: Create a simulation of the xml file to read 
-bool j1App::LoadSaveGame()
-{
-
-	return false;
-}
-
-// TODO 5: Create a method to actually load an xml file
+// TODO 4: Create a method to actually load an xml file
 // then call all the modules to load themselves
-bool j1App::LoadGameNow()
-{
-	bool ret = false;
-
-	pugi::xml_document data;
-	pugi::xml_node root;
-
-	pugi::xml_parse_result result = data.load_file(load_game.GetString());
-
-	if (result != NULL) 
-	{
-		LOG("Loading new Game State from %s...", load_game.GetString());
-
-		root = data.child("game_state");
-
-		p2List_item<j1Module*>* item = modules.start;
-		ret = true;
-
-		while(item != NULL && ret == true)
-		{
-			ret = item->data->Load(root.child(item->data->name.GetString()));
-			item = item->next;
-		}
-
-		data.reset();
-		if (ret == true)
-			LOG("...finished loading");
-		else
-			LOG("...loading process interrupted with error on module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
-	}else
-		LOG("Could not parse game state xml file %s. pugi error: %s", load_game.GetString(), result.description());
-
-	loadRequested = false;
-	return ret;
-}
-// TODO 7: Create a method to save the current state
-bool j1App::SaveGameNow() const
+bool j1App::LoadSaveGame()
 {
 	bool ret = true;
 
-	LOG("Saving Game State to %s...", save_game.GetString());
+	char* buf;
+	int size = App->fs->Load("save/savegame.xml", &buf);
+	pugi::xml_parse_result result = save_file.load_buffer(buf, size);
+	RELEASE(buf);
 
-	//xml object where we will store all data
-	pugi::xml_document data;
-	pugi::xml_node root;
-
-	root = data.append_child("game_state");
-
-	p2List_item<j1Module*>* item = modules.start;
-
-	while(item != NULL && ret == true)
+	if (result == NULL)
 	{
-		ret = item->data->Save(root.append_child(item->data->name.GetString()));
+		LOG("Could not load map xml file savegame.xml. pugi error: %s", result.description());
+		ret = false;
+	}
+	else
+	{
+		save = save_file.child("save");
 	}
 
-	if(ret == true)
+	return ret;
+}
+
+bool j1App::LoadGameNow()
+{
+	bool ret = LoadSaveGame();
+
+	if (ret == true)
 	{
-		data.save_file(save_game.GetString());
-		LOG("... finished saving", );
-	}else
-		LOG("Save process halted from an error in module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
+		p2List_item<j1Module*>* item;
+		item = modules.start;
+
+		while (item != NULL && ret == true)
+		{
+			ret = item->data->Load(save.child(item->data->name.GetString()));
+			item = item->next;
+		}
+	}
+
+	return ret;
+}
+
+// TODO 7: Create a method to save the current state
+// First fill a pugui::xml_document
+// Then put it all in memory with
+// std::stringstream stream;
+// my_xml_document.save(stream);
+// then access it via stream.str().c_str()
+bool j1App::SavegameNow() const
+{
+	pugi::xml_document file_for_saving;
+
+	file_for_saving.append_child("save");
+
+	bool ret = true;
+
+	p2List_item<j1Module*>* item;
+	item = modules.start;
+
+	while (item != NULL)
+	{
+		ret = item->data->Save(file_for_saving.child("save").append_child(item->data->name.GetString()));
+		item = item->next;
+	}
 	
-	data.reset();
-	saveRequested = false;
+	std::stringstream stream;
+	
+	file_for_saving.save(stream);
+
+	App->fs->Save("savegame.xml", stream.str().c_str(), stream.tellp());
 
 	return ret;
 }

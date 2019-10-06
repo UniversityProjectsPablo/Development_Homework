@@ -18,4 +18,13 @@
     <fullscreen_window value="false"/>
   </window>
 
+  <file_system>
+    <path>data.zip</path>
+    <path>data2.zip</path>
+  </file_system>
+
+  <audio>
+	<default_volume value="100"/>
+  </audio>
+  
 </config>

@@ -23,6 +23,9 @@ bool j1Audio::Awake(pugi::xml_node& config)
 {
 	LOG("Loading Audio Mixer");
 	bool ret = true;
+
+	general_volume = config.child("default_volume").attribute("value").as_int();
+
 	SDL_Init(0);
 
 	if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
@@ -85,6 +88,8 @@ bool j1Audio::PlayMusic(const char* path, float fade_time)
 {
 	bool ret = true;
 
+	Mix_VolumeMusic(general_volume);
+
 	if(!active)
 		return false;
 
@@ -103,7 +108,7 @@ bool j1Audio::PlayMusic(const char* path, float fade_time)
 		Mix_FreeMusic(music);
 	}
 
-	music = Mix_LoadMUS(path);
+	music = Mix_LoadMUS_RW(App->fs->Load(path), 1);
 
 	if(music == NULL)
 	{
@@ -142,7 +147,7 @@ unsigned int j1Audio::LoadFx(const char* path)
 	if(!active)
 		return 0;
 
-	Mix_Chunk* chunk = Mix_LoadWAV(path);
+	Mix_Chunk* chunk = Mix_LoadWAV_RW(App->fs->Load(path), 1);
 
 	if(chunk == NULL)
 	{
@@ -167,8 +172,29 @@ bool j1Audio::PlayFx(unsigned int id, int repeat)
 
 	if(id > 0 && id <= fx.count())
 	{
+		Mix_VolumeChunk(fx[id - 1], general_volume);
 		Mix_PlayChannel(-1, fx[id - 1], repeat);
 	}
 
 	return ret;
+}
+
+bool j1Audio::Load(pugi::xml_node & load)
+{
+	general_volume = load.child("volume").attribute("value").as_int();
+	Mix_VolumeMusic(general_volume);
+	return true;
+}
+
+bool j1Audio::Save(pugi::xml_node& save) const
+{
+	save.append_child("volume");
+	save.child("volume").append_attribute("value") = general_volume;
+
+	return true;
+}
+
+void j1Audio::SetVolumeMusic()
+{
+	Mix_VolumeMusic(general_volume);
 }
