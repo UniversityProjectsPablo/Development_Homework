@@ -96,6 +96,7 @@ private:
 
 	p2SString			title;
 	p2SString			organization;
+	uint			    framerate_cap;
 
 	mutable bool		want_to_save = false;
 	bool				want_to_load = false;
@@ -103,6 +104,7 @@ private:
 	mutable p2SString	save_game;
 
 	j1PerfTimer			ptimer;
+	j1PerfTimer			measure;
 	uint64				frame_count = 0;
 	j1Timer				startup_time;
 	j1Timer				frame_time;
@@ -110,7 +112,9 @@ private:
 	uint32				last_sec_frame_count = 0;
 	uint32				prev_last_sec_frame_count = 0;
 
-	int					framerate_cap;
+	uint32 time;
+	float deltaTime;
+
 };
 
 extern j1App* App; // No student is asking me about that ... odd :-S

@@ -85,9 +85,9 @@ bool j1App::Awake()
 		app_config = config.child("app");
 		title.create(app_config.child("title").child_value());
 		organization.create(app_config.child("organization").child_value());
-
+		
 		// TODO 1: Read from config file your framerate cap
-		framerate_cap = app_config.attribute("framerate_cap").as_int();
+		framerate_cap = config.child("app").attribute("framerate_cap").as_int();
 	}
 
 	if(ret == true)
@@ -167,11 +167,16 @@ pugi::xml_node j1App::LoadConfig(pugi::xml_document& config_file) const
 // ---------------------------------------------
 void j1App::PrepareUpdate()
 {
+	
 	frame_count++;
 	last_sec_frame_count++;
 
 	// TODO 4: Calculate the dt: differential time since last frame
+	deltaTime = frame_time.ReadSec();
 	frame_time.Start();
+	ptimer.Start();
+	
+
 }
 
 // ---------------------------------------------
@@ -203,17 +208,21 @@ void j1App::FinishUpdate()
 	App->win->SetTitle(title);
 
 	// TODO 2: Use SDL_Delay to make sure you get your capped framerate
-	j1PerfTimer delay_timer;
-	delay_timer.Start();
-	double delay = 1000 / framerate_cap - last_frame_ms;
-
-	if(last_frame_ms < 1000/framerate_cap)
+	time = (1*1000 / framerate_cap) - last_frame_ms;
+	
+	if (last_frame_ms < framerate_cap)
 	{
-		SDL_Delay(delay);
+
+		measure.Start();
+
+		SDL_Delay(time);
+		LOG("We waited for %i milliseconds and got back in %f", time, measure.ReadMs());
 	}
 
-	// TODO 3: Measure accurately the amount of time it SDL_Delay actually waits compared to what was expected
-
+	
+	
+	// TODO3: Measure accurately the amount of time it SDL_Delay actually waits compared to what was expected
+	//LOG("We waited for %i milliseconds and got back in %i", time);
 }
 
 // Call modules before each loop iteration
@@ -257,7 +266,7 @@ bool j1App::DoUpdate()
 		// TODO 5: send dt as an argument to all updates
 		// you will need to update module parent class
 		// and all modules that use update
-		ret = item->data->Update();
+		ret = item->data->Update(deltaTime);
 	}
 
 	return ret;
