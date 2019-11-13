@@ -175,8 +175,6 @@ void j1App::PrepareUpdate()
 	deltaTime = frame_time.ReadSec();
 	frame_time.Start();
 	ptimer.Start();
-	
-
 }
 
 // ---------------------------------------------
@@ -212,16 +210,12 @@ void j1App::FinishUpdate()
 	
 	if (last_frame_ms < framerate_cap)
 	{
-
 		measure.Start();
 
-		SDL_Delay(time);
-		LOG("We waited for %i milliseconds and got back in %f", time, measure.ReadMs());
-	}
-
+		SDL_Delay(time);		
+	}	
 	
-	
-	// TODO3: Measure accurately the amount of time it SDL_Delay actually waits compared to what was expected
+	// TODO 3: Measure accurately the amount of time it SDL_Delay actually waits compared to what was expected
 	//LOG("We waited for %i milliseconds and got back in %i", time);
 }
 
